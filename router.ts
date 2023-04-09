@@ -5,6 +5,7 @@ import { Utils } from './common-utils';
 import ZerodhaLogin from './zerodha/login'
 import Zerodha from './zerodha/zerodha'
 import { GetInputAsync } from './common-utils';
+import { ScipSearcher } from './zerodha/ScipSearcher'
 import bodyparser from 'body-parser'
 
 const StocksRouter = express.Router()
@@ -55,6 +56,16 @@ function getZerodhaInstance(req: any) {
     zerodha.init(loginData)
     return zerodha
 }
+
+StocksRouter.get('/findscip', (req, res) => {
+    let symbols: any = ScipSearcher.searchScipBySymbol(Utils.getFieldFromRequest(req, 'scip'))
+    if (!symbols || symbols.length == 0) {
+        return res.send(404)
+    }
+    else {
+        res.send(symbols)
+    }
+})
 
 StocksRouter.get('/zerodha/profile', async (req, res) => {
 

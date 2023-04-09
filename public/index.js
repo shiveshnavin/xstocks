@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     getProfile();
+    initializeScipFinder()
 });
 
 function getHost() {
@@ -56,4 +57,40 @@ function login() {
         .catch(error => {
             addError(error.message)
         });
+}
+
+
+
+function initializeScipFinder() {
+    const input = document.getElementById('stockName');
+    const dataList = document.getElementById('scips');
+
+    // Listen to input events on the text input
+    input.addEventListener('input', async function () {
+        // Call the API with the stockName query parameter
+        const response = await axios.get('/findscip', {
+            params: {
+                scip: input.value,
+            },
+        });
+
+        // Clear the previous dropdown options
+        dataList.innerHTML = '';
+
+        // Create new dropdown options for each tradingsymbol in the response
+        response.data.forEach((scip) => {
+            const option = document.createElement('option');
+            option.value = scip.tradingsymbol;
+            dataList.appendChild(option);
+        });
+    });
+
+    // Listen to selection events on the dropdown
+    dataList.addEventListener('change', function () {
+        // Set the input value to the selected option
+        input.value = dataList.value;
+
+        // Call the initialize() function with the selected tradingsymbol
+        initialize(dataList.value);
+    });
 }

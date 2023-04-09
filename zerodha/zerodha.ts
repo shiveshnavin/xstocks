@@ -6,6 +6,7 @@ import { Tick } from 'common-utils';
 import authenticator from 'authenticator'
 import axios from 'axios'
 import { Utils } from 'common-utils';
+import { ScipSearcher } from './ScipSearcher';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 function readOTPFrom2FA(totpKey) {
@@ -42,7 +43,7 @@ String.prototype.replaceAll = function (search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
-let masterSymbolList = require('./scrips_full.json')
+let masterSymbolList = ScipSearcher.getScips()
 
 
 const Zerodha = function (zerodhaConfig, log?) {
