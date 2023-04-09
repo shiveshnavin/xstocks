@@ -1,20 +1,19 @@
 //@ts-nocheck
-
 let moment = require('moment')
-import fetch from 'node-fetch';
+import fetch from 'node-fetch-commonjs';
 import zlogin from './login';
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 import { Tick } from 'common-utils';
-var authenticator = require('authenticator');
+import authenticator from 'authenticator'
+import axios from 'axios'
+import { Utils } from 'common-utils';
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 function readOTPFrom2FA(totpKey) {
-    const token = authenticator.generateToken(totpKey);
+    const token = Utils.generateOTPFromKey(totpKey)
     console.log('Generated TOTP', token)
     return token
 }
 
-var axios = require('axios');
-let bCalc = require('../../archive/brokerage')
 let KiteTicker = require('./ticker')
 const { r, g, b, w, c, m, y, k } = [
     ['r', 1], ['g', 2], ['b', 4], ['w', 7],
@@ -45,7 +44,8 @@ String.prototype.replaceAll = function (search, replacement) {
 };
 let masterSymbolList = require('./scrips_full.json')
 
-const Zerodha = function (zerodhaConfig, log) {
+
+const Zerodha = function (zerodhaConfig, log?) {
     if (!log) {
         log = console.log
     }

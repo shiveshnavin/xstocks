@@ -38,7 +38,7 @@ function parseCookies(cookieHeader) {
     return list;
 }
 
-async function ZerodhaLogin(userId, password, Z_TOTP_KEY, getPin, getOTP) {
+async function ZerodhaLogin(userId, password, Z_TOTP_KEY, getPin?, getOTP?) {
     console.log('Logging in to', userId)
     let home = await wrap(fetch("https://kite.zerodha.com/", {
         "headers": {
@@ -99,6 +99,7 @@ async function ZerodhaLogin(userId, password, Z_TOTP_KEY, getPin, getOTP) {
         public_token: public_token
     };
 }
+
 
 async function loginWith2fa(userId, kf_session, request_id, Z_TOTP_KEY, getPin, getOTP) {
     let pin;

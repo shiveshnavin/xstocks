@@ -3,6 +3,7 @@ import express, { Express, Request, Response } from 'express';
 import fs from 'fs'
 import { Utils } from './common-utils';
 import ZerodhaLogin from './zerodha/login'
+import Zerodha from './zerodha/zerodha'
 import { GetInputAsync } from './common-utils';
 import bodyparser from 'body-parser'
 
@@ -25,7 +26,7 @@ StocksRouter.all('/zerodha/login', async (req, res) => {
         creds = {
             "userid": Utils.getFieldFromRequest(req, "userid"),
             "password": Utils.getFieldFromRequest(req, "password"),
-            "totp_secret": Utils.getFieldFromRequest(req, "userid")
+            "totp_key": Utils.getFieldFromRequest(req, "userid")
         }
     }
     if (!creds.userid || !creds.password) {
@@ -34,10 +35,9 @@ StocksRouter.all('/zerodha/login', async (req, res) => {
         })
     }
 
-    let loginResult = ZerodhaLogin(creds.userid, creds.password, creds.totp_secret, () => { }, async () => {
-        let otp = await GetInputAsync('totp_' + creds.userid)
-        return otp
-    })
+    let zerodha: any = Zerodha(creds)
+    await zerodha.init()
+    debugger
 
 })
 
