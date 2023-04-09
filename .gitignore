@@ -8,6 +8,7 @@ yarn-error.log*
 .vscode
 package-lock.json
 .firebase/
+yarn.lock
 .env
 # Runtime data
 pids

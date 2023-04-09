@@ -1,0 +1,115 @@
+        .source {
+            /* display: none; */
+        }
+
+        body {
+            font-size: 2.5vh;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #myForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 5vw;
+        }
+
+        .section {
+            width: 100%;
+            margin: 5px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+
+        h2 {
+            font-size: 3.5vh;
+        }
+
+
+        label {
+            font-size: medium;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 2.5vh;
+            margin-top: 1vh
+        }
+
+        button {
+            font-size: 2.5vh;
+            margin-top: 1vh;
+            padding: 2vh;
+            border-radius: 1vh;
+            cursor: pointer;
+            width: 100%;
+            border-color: transparent;
+            color: white;
+            text-decoration: none;
+        }
+
+        p {
+            font-size: small;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+
+
+        pre {
+            padding: 20px;
+            font-size: 0.7vh;
+            max-width: 80vw;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+
+        @media only screen and (max-width: 4000px) {
+            pre {
+                font-size: 1vw;
+            }
+        }
+
+        @media only screen and (max-width: 1080px) {
+            pre {
+                font-size: 0.7vh;
+            }
+        }
+
+        input {
+            font-size: 2.5vh;
+        }
+
+        select {
+            font-size: 2.5vh;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        Semibit Stocks
+    </title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.3/axios.min.js"
+        integrity="sha512-wS6VWtjvRcylhyoArkahZUkzZFeKB7ch/MHukprGSh1XIidNvHG1rxPhyFnL73M0FC1YXPIXLRDAoOyRJNni/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="index.css" rel="stylesheet" />
+    <script src="index.js"></script>
+</head>
+
+<body>
+    <div id="myForm">
+        <h2 style="width: 100%;">Stock Analysis</h2>
+
+        <div style="display: inline-block; text-align: left;" class="section">
+            <div class="div_header">
+                <b>Historical Daily Superimpose</b>
+            </div>
+
+            <div>
+                <label for="fromDate">Date Range (From and To)</label>
+                <input type="date" id="fromDate" name="fromDate">
+                <input type="date" id="toDate" name="toDate">
+            </div>
+            <div>
+                <label for="stockName">Stock Name</label>
+                <input type="text" id="stockName" list="fruits" name="stockName">
+            </div>
+
+            <button onclick="window.location.href = `/google`;" style=" background-color: #1e88e5; ">Authorize Channel
+            </button>
+
+        </div>
+
+
+
+        <datalist id="fruits">
+            <option value="Apple">
+            <option value="Banana">
+            <option value="Cherry">
+            <option value="Dragonfruit">
+            <option value="Elderberry">
+            <option value="Fig">
+            <option value="Grape">
+            <option value="Honeydew">
+        </datalist>
+
+    </div>
+</body>
+
+</html>
