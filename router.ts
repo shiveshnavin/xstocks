@@ -63,7 +63,7 @@ StocksRouter.get('/findscip', (req, res) => {
         return res.send(404)
     }
     else {
-        res.send(symbols)
+        res.status(200).send(symbols)
     }
 })
 

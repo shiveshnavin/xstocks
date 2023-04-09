@@ -4,6 +4,9 @@ import path from 'path'
 import fs from 'fs'
 export interface ScipDetails {
     tradingsymbol: string;
+    expiry: string;
+    strike: string;
+    instrument_type: string;
 }
 
 let scips: ScipDetails[];
@@ -43,27 +46,52 @@ function searchScipBySymbol(symbol: any): ScipDetails[] {
 
     const filteredScips = scips.filter((scip) => {
         if (scip.tradingsymbol) {
-            const scipSymbol = scip.tradingsymbol.replace(/\s/g, '').toLowerCase();
-            for (const word of searchWords) {
-                if (!scipSymbol.includes(word)) {
-                    return false;
+            let scipSymbol = scip.tradingsymbol.replace(/\s/g, '').toLowerCase();
+            let fullSumbol = ""
+            if (scip?.expiry?.length > 2) {
+                try {
+                    scipSymbol = scipSymbol
+                    fullSumbol = scip.name + formatDate(scip.expiry) + scip.strike + scip.instrument_type
+                    fullSumbol = fullSumbol.toLocaleLowerCase()
+                    scip.fullSumbol = fullSumbol
+                } catch (e) {
+                    debugger
                 }
             }
-            return true;
+            if (fullSumbol.indexOf(searchQuery) > -1 || scipSymbol.indexOf(searchQuery) > -1) {
+                return true;
+            }
+            for (const word of searchWords) {
+                if (scipSymbol.includes(word) || fullSumbol.includes(word)) {
+                    return true;
+                }
+            }
+            return false;
         }
         return false
     });
 
     return filteredScips.sort((a, b) => {
-        const aSymbol = a.tradingsymbol.replace(/\s/g, '').toLowerCase();
-        const bSymbol = b.tradingsymbol.replace(/\s/g, '').toLowerCase();
+        const aSymbol = a.tradingsymbol.replace(/\s/g, '').toLowerCase() + " " + a.fullSumbol;
+        const bSymbol = b.tradingsymbol.replace(/\s/g, '').toLowerCase() + " " + b.fullSumbol;
 
         const aScore = calculateScore(aSymbol, searchQuery);
         const bScore = calculateScore(bSymbol, searchQuery);
 
         return bScore - aScore;
-    });
+    }).slice(0, 10)
 }
+
+function formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const monthIndex = date.getMonth();
+    const day = date.getDate();
+    const year = date.getFullYear().toString().slice(-2);
+    const monthName = monthNames[monthIndex];
+    return year + monthName + day;
+}
+
 
 function calculateScore(symbol: string, query: string): number {
     const symbolWords = symbol.split(/\s+/);

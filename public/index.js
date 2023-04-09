@@ -36,7 +36,6 @@ function getProfile() {
             console.log(response.data)
             if (response?.data?.user_name) {
                 document.getElementById("welcomUser").innerText = 'Welcome ' + response?.data?.user_name + ' '
-                getProfile()
             }
         })
         .catch(error => {
@@ -49,11 +48,12 @@ function login() {
         .then(response => {
             if (response.data) {
                 setLocalStorageItem('login_data', JSON.stringify(response.data))
-
                 Object.keys(response.data)
                     .forEach(key => {
                         setLocalStorageItem(key, response.data[key])
                     })
+                getProfile()
+
             }
         })
         .catch(error => {
@@ -65,7 +65,7 @@ function login() {
 
 function initializeScipFinder() {
     const input = document.getElementById('stockName');
-    const dataList = document.getElementById('scips');
+    const suggestionsList = document.getElementById("suggestions");
 
     // Listen to input events on the text input
     input.addEventListener('input', async function () {
@@ -77,22 +77,19 @@ function initializeScipFinder() {
         });
 
         // Clear the previous dropdown options
-        dataList.innerHTML = '';
+        suggestionsList.innerHTML = "";
 
         // Create new dropdown options for each tradingsymbol in the response
-        response.data.forEach((scip) => {
-            const option = document.createElement('option');
-            option.value = scip.tradingsymbol;
-            dataList.appendChild(option);
+        response.data.forEach((item) => {
+            const suggestion = document.createElement("li");
+            suggestion.textContent = item?.tradingsymbol;
+            suggestionsList.appendChild(suggestion);
+
+
+            suggestion.addEventListener("click", () => {
+                input.value = item?.tradingsymbol;
+                suggestionsList.innerHTML = "";
+            });
         });
-    });
-
-    // Listen to selection events on the dropdown
-    dataList.addEventListener('change', function () {
-        // Set the input value to the selected option
-        input.value = dataList.value;
-
-        // Call the initialize() function with the selected tradingsymbol
-        initialize(dataList.value);
     });
 }
