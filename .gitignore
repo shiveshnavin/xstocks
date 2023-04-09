@@ -83,7 +83,7 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
-
+**/instruments.csv
 local/
  
 node_modules 

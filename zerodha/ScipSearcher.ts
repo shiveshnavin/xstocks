@@ -1,17 +1,39 @@
 //@ts-nocheck
 import { Utils } from "common-utils";
 import path from 'path'
+import fs from 'fs'
 export interface ScipDetails {
     tradingsymbol: string;
 }
 
 let scips: ScipDetails[];
-
+let SCIP_FILE_PATH = path.join(__dirname, './scips_full.json')
+let CSV_FILE_PATH = path.join(__dirname, './instruments.csv')
 function getScips(): ScipDetails[] {
     if (!scips) {
-        scips = Utils.readFileToObject(path.join(__dirname, './scips_full.json'))
+        scips = Utils.readFileToObject(SCIP_FILE_PATH)
     }
     return scips
+}
+
+function convertInstrumentsCSVToJSON(csvPath) {
+    let csvString = fs.readFileSync(csvPath).toString()
+    const lines = csvString.split('\n');
+    const headers = lines[0].split(',');
+    const instruments = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        const data = lines[i].split(',');
+        const instrument = {};
+
+        for (let j = 0; j < headers.length; j++) {
+            instrument[headers[j]] = data[j];
+        }
+
+        instruments.push(instrument);
+    }
+
+    return fs.writeFileSync(SCIP_FILE_PATH, JSON.stringify(instruments, null, 2))
 }
 
 function searchScipBySymbol(symbol: any): ScipDetails[] {
@@ -20,13 +42,16 @@ function searchScipBySymbol(symbol: any): ScipDetails[] {
     const searchWords = symbol.toLowerCase().split(/\s+/);
 
     const filteredScips = scips.filter((scip) => {
-        const scipSymbol = scip.tradingsymbol.replace(/\s/g, '').toLowerCase();
-        for (const word of searchWords) {
-            if (!scipSymbol.includes(word)) {
-                return false;
+        if (scip.tradingsymbol) {
+            const scipSymbol = scip.tradingsymbol.replace(/\s/g, '').toLowerCase();
+            for (const word of searchWords) {
+                if (!scipSymbol.includes(word)) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        return false
     });
 
     return filteredScips.sort((a, b) => {
@@ -54,5 +79,6 @@ function calculateScore(symbol: string, query: string): number {
 
 export const ScipSearcher = {
     searchScipBySymbol,
-    getScips
+    getScips,
+    convertInstrumentsCSVToJSON
 }

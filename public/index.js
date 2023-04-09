@@ -34,8 +34,10 @@ function getProfile() {
     })
         .then(response => {
             console.log(response.data)
-            if (response?.data?.user_name)
+            if (response?.data?.user_name) {
                 document.getElementById("welcomUser").innerText = 'Welcome ' + response?.data?.user_name + ' '
+                getProfile()
+            }
         })
         .catch(error => {
             addError(error.message)
