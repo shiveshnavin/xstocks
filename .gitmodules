@@ -1,0 +1,6 @@
+[submodule "common-utils"]
+	path = common-utils
+	url = https://github.com/shiveshnavin/common-utils
+[submodule "common-creds"]
+	path = common-creds
+	url = https://github.com/shiveshnavin/common-creds
