@@ -2,6 +2,11 @@ document.addEventListener('DOMContentLoaded', function () {
     getProfile();
     initializeScipFinder()
     renderSelectedItems()
+    loadInputValue('date', "toDate")
+    loadInputValue('date', "fromDate")
+    loadInputValue('select', 'normalization')
+    loadInputValue('select', 'interval')
+    refreshGraph()
 });
 
 function getHost() {
@@ -192,10 +197,9 @@ function refreshGraph() {
     let body = {
         scips: selectedScips?.filter(sc => {
             return sc.enabled
-        })
-            .map(sc => {
-                return sc.tradingsymbol
-            }).join(","),
+        }).map(sc => {
+            return sc.tradingsymbol
+        }).join(","),
         from: getTimeStampFromPickerById("fromDate"),
         to: getTimeStampFromPickerById("toDate"),
         interval: getSelectedOptionValue('interval')
@@ -206,7 +210,8 @@ function refreshGraph() {
     })
         .then(response => {
             addError(undefined)
-            console.log(response.data)
+            // console.log(response.data)
+            plotGraph(response.data)
         })
         .catch(error => {
             addError(error)
@@ -215,12 +220,125 @@ function refreshGraph() {
 
 function getSelectedOptionValue(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
+    setLocalStorageItem("select_" + dropdownId, dropdown.value)
+
     return dropdown.value;
 }
 
 function getTimeStampFromPickerById(id) {
     const fromDateInput = document.getElementById(id);
+
     const fromDateStr = fromDateInput.value;
+    setLocalStorageItem("date_" + id, fromDateStr)
+
     const fromDateTimestamp = new Date(fromDateStr).getTime();
     return fromDateTimestamp
+}
+
+
+function loadInputValue(type, id) {
+    const fromDateInput = document.getElementById(id);
+    id = type + "_" + id
+    if (getLocalStorageItem(id))
+        fromDateInput.value = getLocalStorageItem(id)
+}
+
+
+function plotGraph(historyResponse) {
+
+    const canvas = document.getElementById("myChart");
+    try {
+
+        Object.keys(Chart?.instances)?.forEach(ex => {
+            if (ex)
+                Chart?.instances[ex].destroy();
+
+        })
+    } catch (e) {
+
+    }
+
+    let normalization = getSelectedOptionValue("normalization")
+
+    let allScipSymbols = Object.keys(historyResponse)
+    let firstKey = allScipSymbols[0]
+    let timeStamps = historyResponse[firstKey].map(oj => {
+        return moment(oj.datetime).format("MMM DD HH:mm")
+    })
+    allScipSymbols.forEach(e => {
+        historyResponse[e].forEach(oj => {
+            oj.label = moment(oj.datetime).format("MMM DD HH:mm")
+        })
+    })
+
+    let firstVals = {}
+    let cfg = {
+        type: 'line',
+        data: {
+            labels: timeStamps,
+            datasets: allScipSymbols.map((tradingsymbol) => {
+                return {
+                    label: tradingsymbol,
+                    data: historyResponse[tradingsymbol].map(tick => {
+                        if (normalization == 'normalized') {
+                            if (!firstVals[tradingsymbol]) {
+                                firstVals[tradingsymbol] = tick.close
+                            }
+                            let newValue = parseFloat(tick.close) / Math.max(1, parseFloat(firstVals[tradingsymbol]))
+                            return newValue
+                        }
+                        else {
+                            return parseFloat(tick.close)
+                        }
+
+                    })
+                }
+            })
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        labelPointStyle: function (context) {
+                            return {
+                                pointStyle: 'triangle',
+                                rotation: 0
+                            };
+                        },
+                        label: function (context) {
+                            let label = context.dataset.label || '';
+                            allScipSymbols.forEach(sym => {
+                                let datas = historyResponse[sym]
+                                let matchOthr = findObjectByField(datas, 'label', context.label)
+                                label = label + "\n[" + matchOthr.symbol + ": " + matchOthr.close + "]\n"
+                            })
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    new Chart(
+        canvas,
+        cfg
+    );
+
+}
+
+function findObjectByField(array, fieldName, value) {
+    return array.find(function (obj) {
+        return obj[fieldName] === value;
+    });
+}
+
+// Function to generate a random color
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
