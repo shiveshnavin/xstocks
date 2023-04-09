@@ -1,5 +1,6 @@
 //@ts-nocheck
-import fetch from 'node-fetch';
+import fetch from 'node-fetch-commonjs';
+
 function wrap(fetchPromise, isRaw) {
     return new Promise((resolve, reject) => {
         fetchPromise
@@ -39,7 +40,6 @@ function parseCookies(cookieHeader) {
 
 async function ZerodhaLogin(userId, password, Z_TOTP_KEY, getPin, getOTP) {
     console.log('Logging in to', userId)
-
     let home = await wrap(fetch("https://kite.zerodha.com/", {
         "headers": {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",

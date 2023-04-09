@@ -6,6 +6,7 @@
         Semibit Stocks
     </title>
 
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.3/axios.min.js"
         integrity="sha512-wS6VWtjvRcylhyoArkahZUkzZFeKB7ch/MHukprGSh1XIidNvHG1rxPhyFnL73M0FC1YXPIXLRDAoOyRJNni/g=="
@@ -33,7 +34,8 @@
                 <input type="text" id="stockName" list="fruits" name="stockName">
             </div>
 
-            <button onclick="window.location.href = `/google`;" style=" background-color: #1e88e5; ">Authorize Channel
+            <div id="dataDisplay"></div>
+            <button onclick="login()" style=" background-color: #1e88e5; ">Authorize
             </button>
 
         </div>
