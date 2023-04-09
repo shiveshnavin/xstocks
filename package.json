@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "start": "nodemon server.ts",
+    "start:dev": "nodemon server.ts",
+    "start": "ts-node server.ts",
     "build": "cd common-utils && npm run build && cd .. && npm install common-utils && tsc"
   },
   "keywords": [],
