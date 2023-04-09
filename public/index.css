@@ -129,3 +129,31 @@
         #suggestions li:hover {
             background-color: #f0f0f0;
         }
+
+
+
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .selected-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .buttons .action {
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .buttons .action:hover {
+            background-color: #ddd;
+        }

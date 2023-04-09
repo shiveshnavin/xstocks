@@ -17,7 +17,9 @@
 
 <body>
     <div id="myForm">
-        <h2 id="welcomUser" style="width: 100%;">Stock Analysis</h2>
+        <h2 id="welcomUser" style="width: 100%;"><button onclick="login()"
+                style=" background-color: #1e88e5;width: auto; ">Authorize Zerodha</button>
+        </h2>
 
         <div style="display: inline-block; text-align: left;" class="section">
             <div class="div_header">
@@ -37,8 +39,10 @@
             </div>
 
             <div id="dataDisplay"></div>
-            <button onclick="login()" style=" background-color: #1e88e5; ">Authorize
-            </button>
+
+            <label><b>Selected Stocks</b></label>
+            <ul id="selected-items"></ul>
+
 
         </div>
 
