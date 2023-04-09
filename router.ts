@@ -36,9 +36,44 @@ StocksRouter.all('/zerodha/login', async (req, res) => {
     }
 
     let zerodha: any = Zerodha(creds)
-    await zerodha.init()
-    debugger
+    let loginData = await zerodha.init()
+    res.send(loginData)
+})
 
+function getZerodhaInstance(req: any) {
+    let loginData = {
+        enctoken: Utils.getFieldFromRequest(req, 'enctoken'),
+        kf_session: Utils.getFieldFromRequest(req, 'kf_session'),
+        public_token: Utils.getFieldFromRequest(req, 'public_token'),
+        id: Utils.getFieldFromRequest(req, 'id') || Utils.getFieldFromRequest(req, 'userid')
+    }
+
+    if (!(loginData.enctoken && loginData.kf_session && loginData.public_token && loginData.id)) {
+        return undefined
+    }
+    let zerodha = Zerodha(loginData)
+    zerodha.init(loginData)
+    return zerodha
+}
+
+StocksRouter.get('/zerodha/profile', async (req, res) => {
+
+    try {
+        let zerodha = getZerodhaInstance(req);
+        if (zerodha) {
+            let profile = await zerodha.getProfile();
+            res.send(profile)
+        }
+        else {
+            return res.status(401).send({
+                message: 'Login required'
+            })
+        }
+    } catch (e: any) {
+        res.status(500).send({
+            message: e.message
+        })
+    }
 })
 
 export default StocksRouter

@@ -111,11 +111,16 @@ const Zerodha = function (zerodhaConfig, log?) {
         let loginData;
         if (existingLogin) {
             loginData = existingLogin
+            if (existingLogin.id || existingLogin.userid) {
+                Z_USERID = existingLogin.id || existingLogin.userid
+            }
         }
         else {
             loginData = await zlogin(Z_USERID, Z_PASSWORD, Z_TOTP_KEY, getPin, getOtp)
 
         }
+
+        loginData.userid = Z_USERID
         loginData.id = Z_USERID
         enctoken = loginData.enctoken;
         kf_session = loginData.kf_session;
@@ -499,7 +504,16 @@ const Zerodha = function (zerodhaConfig, log?) {
 
     }
 
-    return mod;
+    return {
+        zerodhaCall: mod.zerodhaCall,
+        init: mod.init,
+        getProfile: mod.getProfile,
+        findScrip: mod.findScrip,
+        listen: mod.listen,
+        createTicker: mod.createTicker,
+        getHistoricalData: mod.getHistoricalData,
+        order: mod.order
+    };
 }
 
 export default Zerodha

@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import StocksRouter from './router';
 
 const app: Express = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 8888;
 
 app.use(StocksRouter)
 app.listen(port, () => {
