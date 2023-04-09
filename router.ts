@@ -1,3 +1,4 @@
+//@ts-nocheck
 import path from 'path';
 import express, { Express, Request, Response } from 'express';
 import fs from 'fs'
@@ -41,7 +42,7 @@ StocksRouter.all('/zerodha/login', async (req, res) => {
     res.send(loginData)
 })
 
-function getZerodhaInstance(req: any) {
+function getZerodhaInstance(req: any, res: any) {
     let loginData = {
         enctoken: Utils.getFieldFromRequest(req, 'enctoken'),
         kf_session: Utils.getFieldFromRequest(req, 'kf_session'),
@@ -50,6 +51,11 @@ function getZerodhaInstance(req: any) {
     }
 
     if (!(loginData.enctoken && loginData.kf_session && loginData.public_token && loginData.id)) {
+        if (res) {
+            res.status(401).send({
+                message: 'Login required'
+            })
+        }
         return undefined
     }
     let zerodha = Zerodha(loginData)
@@ -70,7 +76,7 @@ StocksRouter.get('/findscip', (req, res) => {
 StocksRouter.get('/zerodha/profile', async (req, res) => {
 
     try {
-        let zerodha = getZerodhaInstance(req);
+        let zerodha = getZerodhaInstance(req, res);
         if (zerodha) {
             let profile = await zerodha.getProfile();
             res.send(profile)
@@ -83,6 +89,51 @@ StocksRouter.get('/zerodha/profile', async (req, res) => {
     } catch (e: any) {
         res.status(500).send({
             message: e.message
+        })
+    }
+})
+
+
+StocksRouter.post('/history', async (req, res) => {
+    let scips: any = (Utils.getFieldFromRequest(req, "scips"))?.split(",")
+    let interval = Utils.getFieldFromRequest(req, "interval") || "minute"
+    let fromTimestamp = Utils.getFieldFromRequest(req, 'from')
+    let toTimestamp = Utils.getFieldFromRequest(req, 'to')
+    if (!fromTimestamp) {
+        fromTimestamp = Utils.getTimestampOfPreviousTime(9, 0)
+    }
+    if (!toTimestamp) {
+        toTimestamp = new Date().getTime()
+    }
+    if (toTimestamp < fromTimestamp) {
+        return res.status(400).send({
+            message: 'from must be > to'
+        })
+
+    }
+
+    let from = Utils.formatDate(fromTimestamp)
+    let to = Utils.formatDate(toTimestamp)
+
+
+    if (scips?.length > 0) {
+
+        let zerodha = getZerodhaInstance(req, res)
+        let response = {}
+        if (zerodha) {
+            for (let i = 0; i < scips.length; i++) {
+                let tradingsymbol = scips[i];
+                let stockData = ScipSearcher.getBySymbol(tradingsymbol);
+                let data = await zerodha.getHistoricalData(stockData, interval, from, to, 0, true);
+                response[tradingsymbol] = data;
+            }
+            res.send(response)
+        }
+
+    }
+    else {
+        return res.status(400).send({
+            message: 'Must provide `scips` as comma separated list of trading symbols'
         })
     }
 })

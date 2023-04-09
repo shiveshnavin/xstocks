@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "nodemon server.ts",
-    "build": "tsc"
+    "build": "cd common-utils && npm run build && cd .. && npm install common-utils && tsc"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "authenticator": "^1.1.5",
-    "common-utils": "./common-utils",
+    "common-utils": "file:common-utils",
     "express": "^4.17.2",
     "node-fetch": "^3.3.1",
     "node-fetch-commonjs": "^3.2.4"

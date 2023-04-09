@@ -39,6 +39,12 @@ function convertInstrumentsCSVToJSON(csvPath) {
     return fs.writeFileSync(SCIP_FILE_PATH, JSON.stringify(instruments, null, 2))
 }
 
+function getBySymbol(symbol: any) {
+    const filteredScips = scips.find((scip) => {
+        return scip.tradingsymbol == symbol
+    })
+    return filteredScips
+}
 function searchScipBySymbol(symbol: any): ScipDetails[] {
     let scips: ScipDetails[] = getScips();
     const searchQuery = symbol.replace(/\s/g, '').toLowerCase();
@@ -106,6 +112,7 @@ function calculateScore(symbol: string, query: string): number {
 
 
 export const ScipSearcher = {
+    getBySymbol,
     searchScipBySymbol,
     getScips,
     convertInstrumentsCSVToJSON

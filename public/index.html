@@ -17,8 +17,8 @@
 
 <body>
     <div id="myForm">
-        <h2 id="welcomUser" style="width: 100%;"><button onclick="login()"
-                style=" background-color: #1e88e5;width: auto; ">Authorize Zerodha</button>
+        <h2 id="welcomUser" style="width: 100%;">
+            <button onclick="login()" style=" background-color: #1e88e5;width: auto; ">Authorize Zerodha</button>
         </h2>
 
         <div style="display: inline-block; text-align: left;" class="section">
@@ -42,7 +42,20 @@
 
             <label><b>Selected Stocks</b></label>
             <ul id="selected-items"></ul>
+            <label>Interval</label>
+            <select id="interval">
+                <option value="minute">1 Minute</option>
+                <option value="3minute">3 Minute</option>
+                <option value="5minute">5 Minute</option>
+                <option value="10minute">10 Minute</option>
+                <option value="15minute">15 Minute</option>
+                <option value="30minute">30 Minute</option>
+                <option value="60minute">60 Minute</option>
+                <option value="day">Day</option>
+            </select>
 
+            <button onclick="refreshGraph()" style=" background-color: #4CAF50;">Refresh</button>
+            <span style="color: red;" id="error"></span>
 
         </div>
 

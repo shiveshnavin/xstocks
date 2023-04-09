@@ -16,8 +16,19 @@ function getLocalStorageItem(key) {
     return localStorage.getItem(key);
 }
 
-function addError(errMsg, error) {
-    console.error(error);
+function addError(error) {
+    let errMsg = error?.message
+    if (error?.response?.data?.message) {
+        errMsg = error?.response?.data?.message
+    }
+    if (errMsg) {
+        document.getElementById("error").innerText = errMsg
+    }
+    else {
+        document.getElementById("error").innerText = ""
+    }
+    if (error)
+        console.error(error);
 }
 
 
@@ -36,11 +47,12 @@ function getProfile() {
         .then(response => {
             console.log(response.data)
             if (response?.data?.user_name) {
+                addError(undefined)
                 document.getElementById("welcomUser").innerText = 'Welcome ' + response?.data?.user_name + ' '
             }
         })
         .catch(error => {
-            addError(error.message)
+            addError(error)
         });
 }
 
@@ -58,13 +70,13 @@ function login() {
             }
         })
         .catch(error => {
-            addError(error.message)
+            addError(error)
         });
 }
 
 
 
-var selectedItems = [];
+var selectedScips = [];
 
 function initializeScipFinder() {
 
@@ -106,22 +118,22 @@ function initializeScipFinder() {
 
 
 function addSelectedItem(item) {
-    if (!selectedItems.some((selectedItem) => selectedItem.tradingsymbol === item)) {
-        selectedItems.push({ tradingsymbol: item, enabled: true });
+    if (!selectedScips.some((selectedItem) => selectedItem.tradingsymbol === item)) {
+        selectedScips.push({ tradingsymbol: item, enabled: true });
         renderSelectedItems();
     }
 }
 
 function removeSelectedItem(item) {
-    const index = selectedItems.findIndex((selectedItem) => selectedItem.tradingsymbol === item);
+    const index = selectedScips.findIndex((selectedItem) => selectedItem.tradingsymbol === item);
     if (index >= 0) {
-        selectedItems.splice(index, 1);
+        selectedScips.splice(index, 1);
         renderSelectedItems();
     }
 }
 
 function toggleSelectedItem(item) {
-    const selectedItem = selectedItems.find((selectedItem) => selectedItem.tradingsymbol === item);
+    const selectedItem = selectedScips.find((selectedItem) => selectedItem.tradingsymbol === item);
     if (selectedItem) {
         selectedItem.enabled = !selectedItem.enabled;
         renderSelectedItems();
@@ -129,11 +141,11 @@ function toggleSelectedItem(item) {
 }
 
 function renderSelectedItems() {
-    if (selectedItems && selectedItems.length > 0)
-        setLocalStorageItem('selected_scips', JSON.stringify(selectedItems))
+    if (selectedScips && selectedScips.length > 0)
+        setLocalStorageItem('selected_scips', JSON.stringify(selectedScips))
     if (getLocalStorageItem('selected_scips')) {
         let str = getLocalStorageItem('selected_scips')
-        selectedItems = JSON.parse(getLocalStorageItem('selected_scips'))
+        selectedScips = JSON.parse(getLocalStorageItem('selected_scips'))
     }
 
 
@@ -141,7 +153,7 @@ function renderSelectedItems() {
     const selectedItemsList = document.getElementById("selected-items");
     selectedItemsList.innerHTML = ''
 
-    selectedItems.forEach((selectedItem) => {
+    selectedScips.forEach((selectedItem) => {
         const item = document.createElement("li");
         item.classList.add("selected-item");
         item.textContent = selectedItem.tradingsymbol;
@@ -151,8 +163,8 @@ function renderSelectedItems() {
 
         const toggleButton = document.createElement("span");
         toggleButton.classList.add("action", "show-hide");
-        toggleButton.style.color = selectedItem.enabled ? "#00f" : "#f00";
-        toggleButton.textContent = selectedItem.enabled ? "SHOW" : "HIDE";
+        toggleButton.style.color = selectedItem.enabled ? "#FF9800" : "#4CAF50";
+        toggleButton.textContent = selectedItem.enabled ? "HIDE" : "SHOW";
         toggleButton.addEventListener("click", () => {
             toggleSelectedItem(selectedItem.tradingsymbol);
             renderSelectedItems()
@@ -174,4 +186,41 @@ function renderSelectedItems() {
         selectedItemsList.appendChild(item);
     });
 
+}
+
+function refreshGraph() {
+    let body = {
+        scips: selectedScips?.filter(sc => {
+            return sc.enabled
+        })
+            .map(sc => {
+                return sc.tradingsymbol
+            }).join(","),
+        from: getTimeStampFromPickerById("fromDate"),
+        to: getTimeStampFromPickerById("toDate"),
+        interval: getSelectedOptionValue('interval')
+    }
+
+    axios.post(getHost() + `/history`, body, {
+        headers: getHeaders(),
+    })
+        .then(response => {
+            addError(undefined)
+            console.log(response.data)
+        })
+        .catch(error => {
+            addError(error)
+        });
+}
+
+function getSelectedOptionValue(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    return dropdown.value;
+}
+
+function getTimeStampFromPickerById(id) {
+    const fromDateInput = document.getElementById(id);
+    const fromDateStr = fromDateInput.value;
+    const fromDateTimestamp = new Date(fromDateStr).getTime();
+    return fromDateTimestamp
 }

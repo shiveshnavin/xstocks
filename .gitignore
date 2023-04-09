@@ -87,6 +87,7 @@ typings/
 local/
  
 node_modules 
+dist/
 # .vscode/ 
 
 
